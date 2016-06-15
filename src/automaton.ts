@@ -169,7 +169,7 @@ export function initMode(_mode: Mode) {
   new Button('SAVE', 19, 35, () => {
     saveAsUrl();
   });
-  new Button('MAIN MANU', 25, 35, () => {
+  new Button('MAIN MENU', 25, 35, () => {
     mainmenu.start();
   });
   let md = modeDesc[mode];

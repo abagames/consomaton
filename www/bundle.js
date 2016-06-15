@@ -244,7 +244,7 @@
 	    new button_1.default('SAVE', 19, 35, function () {
 	        saveAsUrl();
 	    });
-	    new button_1.default('MAIN MANU', 25, 35, function () {
+	    new button_1.default('MAIN MENU', 25, 35, function () {
 	        mainmenu.start();
 	    });
 	    var md = modeDesc[mode];
