@@ -222,7 +222,7 @@ function play() {
   if (mode === Mode.playground) {
     saveInitCells();
   }
-  if (mode === Mode.testPlay || mode == Mode.quiz) {
+  if ((mode === Mode.testPlay || mode == Mode.quiz) && !isPlayingEnabled) {
     enableRuleFrames(false);
   }
   _.times(width, x => _.times(height, y =>
@@ -359,6 +359,7 @@ function solveQuiz() {
   playButton.setDescription('    ', 0, -1);
   playButton.remove();
   tutorial.stop();
+  enableRuleFrames(false);
   pause();
   if (mode === Mode.quiz) {
     new Button('PLAYGROUND', 0, 35, () => {
@@ -471,6 +472,10 @@ function onCharSet(c: string, x: number, y: number) {
     cells[x - consoleCellsLeft][y - consoleCellsTop] = c;
   } else if (ca === consoleFixCellAttribute) {
   } else {
+    if ((mode === Mode.testPlay || mode === Mode.quiz) && isPlaying) {
+      stop();
+      changeToPlayButton();      
+    }
     const baStr = (ca % 2) === 0 ? 'before' : 'after';
     const p = ruleConsolePosition[ca];
     const r = rules[Math.floor(ca / 2)][baStr][y - p.y];

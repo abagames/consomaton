@@ -113,12 +113,12 @@
 	var mode = Mode.playground;
 	var quizNumber;
 	var isPlayingEnabled = true;
+	var maxRuleCount = 8;
 	function init() {
 	    cells = _.times(width, function () { return _.times(height, function () { return null; }); });
 	    nextCells = _.times(width, function () { return _.times(height, function () { return null; }); });
 	    initCells = _.times(width, function () { return _.times(height, function () { return null; }); });
 	    goalCells = _.times(width, function () { return _.times(height, function () { return null; }); });
-	    var maxRuleCount = 8;
 	    exports.rules = _.times(maxRuleCount, function () {
 	        return {
 	            before: ['   ', '   ', '   '],
@@ -294,7 +294,7 @@
 	    if (mode === Mode.playground) {
 	        saveInitCells();
 	    }
-	    if (mode === Mode.testPlay || mode == Mode.quiz) {
+	    if ((mode === Mode.testPlay || mode == Mode.quiz) && !isPlayingEnabled) {
 	        enableRuleFrames(false);
 	    }
 	    _.times(width, function (x) { return _.times(height, function (y) {
@@ -421,7 +421,20 @@
 	    playButton.setDescription('    ', 0, -1);
 	    playButton.remove();
 	    tutorial.stop();
+	    enableRuleFrames(false);
 	    pause();
+	    if (mode === Mode.quiz) {
+	        new button_1.default('PLAYGROUND', 0, 35, function () {
+	            playgroundRules = saveRules();
+	            _.times(maxRuleCount - playgroundRules.length, function () {
+	                playgroundRules.push({
+	                    before: ['   ', '   ', '   '],
+	                    after: ['   ', '   ', '   ']
+	                });
+	            });
+	            initMode(Mode.playground);
+	        });
+	    }
 	    if (mode !== Mode.quiz || quizNumber == null) {
 	        board.set('SOLVED', 18, 17);
 	        return;
@@ -510,6 +523,10 @@
 	    else if (ca === consoleFixCellAttribute) {
 	    }
 	    else {
+	        if ((mode === Mode.testPlay || mode === Mode.quiz) && exports.isPlaying) {
+	            stop();
+	            changeToPlayButton();
+	        }
 	        var baStr = (ca % 2) === 0 ? 'before' : 'after';
 	        var p = ruleConsolePosition[ca];
 	        var r = exports.rules[Math.floor(ca / 2)][baStr][y - p.y];
