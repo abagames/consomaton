@@ -48,13 +48,13 @@ const modeDesc = [
 let mode: Mode = Mode.playground;
 let quizNumber: number;
 let isPlayingEnabled = true;
+const maxRuleCount = 8;
 
 export function init() {
   cells = _.times(width, () => _.times(height, () => null));
   nextCells = _.times(width, () => _.times(height, () => null));
   initCells = _.times(width, () => _.times(height, () => null));
   goalCells = _.times(width, () => _.times(height, () => null));
-  const maxRuleCount = 8;
   rules = _.times(maxRuleCount, () => {
     return {
       before: ['   ', '   ', '   '],
@@ -360,6 +360,18 @@ function solveQuiz() {
   playButton.remove();
   tutorial.stop();
   pause();
+  if (mode === Mode.quiz) {
+    new Button('PLAYGROUND', 0, 35, () => {
+      playgroundRules = saveRules();
+      _.times(maxRuleCount - playgroundRules.length, () => {
+        playgroundRules.push({
+          before: ['   ', '   ', '   '],
+          after: ['   ', '   ', '   ']
+        });
+      });
+      initMode(Mode.playground);
+    });
+  }
   if (mode !== Mode.quiz || quizNumber == null) {
     board.set('SOLVED', 18, 17);
     return;
