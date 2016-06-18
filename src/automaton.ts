@@ -474,7 +474,7 @@ function onCharSet(c: string, x: number, y: number) {
   } else {
     if ((mode === Mode.testPlay || mode === Mode.quiz) && isPlaying) {
       stop();
-      changeToPlayButton();      
+      changeToPlayButton();
     }
     const baStr = (ca % 2) === 0 ? 'before' : 'after';
     const p = ruleConsolePosition[ca];

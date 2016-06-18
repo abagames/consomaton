@@ -41,29 +41,30 @@ export function init() {
   context.font = `${Math.floor(textHeight / 2) * fontSizeRatio}px ${fontName}`;
   context.textAlign = 'center';
   context.textBaseline = 'middle';
-  document.onmousemove = (e) => {
-    const nx = Math.floor
-      ((e.pageX - canvas.offsetLeft) * canvasWidth / canvas.offsetWidth / textWidth);
-    const ny = Math.floor
-      ((e.pageY - canvas.offsetTop) * canvasHeight / canvas.offsetHeight / textHeight);
-    if (nx >= 0 && nx < width && ny >= 0 && ny < height &&
-      (cursorPos.x !== nx || cursorPos.y !== ny)) {
-      cursorPos.x = nx;
-      cursorPos.y = ny;
-      const isOnBoard = isSaved && cursorPos.isIn(savedPos, savedSize);
-      onCursorMove(cursorPos, isOnBoard);
-    }
-  };
-  document.onmousedown = (e) => {
-    onKeyDown();
-    const isOnBoard = isSaved && cursorPos.isIn(savedPos, savedSize);
-    if (!isOnBoard) {
-      onOutBoardClick();
-    }
-  };
-  document.onmouseup = (e) => {
-    onKeyUp();
-  };
+  const isSupportingTouchEvent = 'ontouchstart' in document.documentElement;
+  if (!isSupportingTouchEvent) {
+    document.onmousemove = (e) => {
+      onMouseTouchMove(e.pageX, e.pageY);
+    };
+    document.onmousedown = (e) => {
+      onMouseTouchMove(e.pageX, e.pageY);
+      onMouseTouchDown(e);
+    };
+    document.onmouseup = (e) => {
+      onMouseTouchUp(e);
+    };
+  }
+  document.ontouchmove = (e) => {
+    e.preventDefault();
+    onMouseTouchMove(e.touches[0].pageX, e.touches[0].pageY);
+  }
+  document.ontouchstart = (e) => {
+    onMouseTouchMove(e.touches[0].pageX, e.touches[0].pageY);
+    onMouseTouchDown(e);
+  }
+  document.ontouchend = (e) => {
+    onMouseTouchUp(e);
+  }
   const cursorMvs = [[-1, 0], [0, -1], [1, 0], [0, 1]];
   document.onkeypress = (e) => {
     setChar(String.fromCharCode(e.charCode), cursorPos.x, cursorPos.y);
@@ -98,6 +99,32 @@ export function init() {
       onKeyUp();
     }
   };
+}
+
+function onMouseTouchMove(x, y) {
+  const nx = Math.floor
+    ((x - canvas.offsetLeft) * canvasWidth / canvas.offsetWidth / textWidth);
+  const ny = Math.floor
+    ((y - canvas.offsetTop) * canvasHeight / canvas.offsetHeight / textHeight);
+  if (nx >= 0 && nx < width && ny >= 0 && ny < height &&
+    (cursorPos.x !== nx || cursorPos.y !== ny)) {
+    cursorPos.x = nx;
+    cursorPos.y = ny;
+    const isOnBoard = isSaved && cursorPos.isIn(savedPos, savedSize);
+    onCursorMove(cursorPos, isOnBoard);
+  }
+}
+
+function onMouseTouchDown(e) {
+  onKeyDown();
+  const isOnBoard = isSaved && cursorPos.isIn(savedPos, savedSize);
+  if (!isOnBoard) {
+    onOutBoardClick();
+  }
+}
+
+function onMouseTouchUp(e) {
+  onKeyUp();
 }
 
 export function update() {

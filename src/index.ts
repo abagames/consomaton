@@ -2,8 +2,10 @@ import * as con from './console';
 import * as aut from './automaton';
 import * as mainmenu from './mainmenu';
 import * as tutorial from './tutorial';
+import * as debug from './util/debug';
 
 window.onload = () => {
+  //debug.enableShowingErrors();
   con.init();
   aut.init();
   mainmenu.init();
