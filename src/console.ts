@@ -41,19 +41,16 @@ export function init() {
   context.font = `${Math.floor(textHeight / 2) * fontSizeRatio}px ${fontName}`;
   context.textAlign = 'center';
   context.textBaseline = 'middle';
-  const isSupportingTouchEvent = 'ontouchstart' in document.documentElement;
-  if (!isSupportingTouchEvent) {
-    document.onmousemove = (e) => {
-      onMouseTouchMove(e.pageX, e.pageY);
-    };
-    document.onmousedown = (e) => {
-      onMouseTouchMove(e.pageX, e.pageY);
-      onMouseTouchDown(e);
-    };
-    document.onmouseup = (e) => {
-      onMouseTouchUp(e);
-    };
-  }
+  document.onmousemove = (e) => {
+    onMouseTouchMove(e.pageX, e.pageY);
+  };
+  document.onmousedown = (e) => {
+    onMouseTouchMove(e.pageX, e.pageY);
+    onMouseTouchDown(e);
+  };
+  document.onmouseup = (e) => {
+    onMouseTouchUp(e);
+  };
   document.ontouchmove = (e) => {
     e.preventDefault();
     onMouseTouchMove(e.touches[0].pageX, e.touches[0].pageY);
@@ -115,7 +112,16 @@ function onMouseTouchMove(x, y) {
   }
 }
 
+const preventingChatteringDutation = 1000 * 5 / 60;
+let isMouseTouchDowning = false;
+let lastMouseTouchDownTime = new Date().getTime();
 function onMouseTouchDown(e) {
+  const now = new Date().getTime();
+  if (isMouseTouchDowning || now < lastMouseTouchDownTime + preventingChatteringDutation) {
+    return;
+  }
+  isMouseTouchDowning = true;
+  lastMouseTouchDownTime = now;
   onKeyDown();
   const isOnBoard = isSaved && cursorPos.isIn(savedPos, savedSize);
   if (!isOnBoard) {
@@ -123,7 +129,14 @@ function onMouseTouchDown(e) {
   }
 }
 
+let lastMouseTouchUpTime = new Date().getTime();
 function onMouseTouchUp(e) {
+  const now = new Date().getTime();
+  if (!isMouseTouchDowning || now < lastMouseTouchUpTime + preventingChatteringDutation) {
+    return;
+  }
+  isMouseTouchDowning = false;
+  lastMouseTouchUpTime = now;
   onKeyUp();
 }
 
