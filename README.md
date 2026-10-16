@@ -10,3 +10,7 @@ Write rules for an automaton to reproduce a goal console state.
 License
 ----------
 MIT
+
+## Play online
+
+Also playable on [WASM Arcade](https://www.wasmarcade.online/arcade/consomaton/) — free, no download.
